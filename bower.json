@@ -1,0 +1,13 @@
+{
+  "name": "D3_learning",
+  "authors": [
+    "zhangja4 <james.zhang@oocl.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [
+    "amd"
+  ],
+  "license": "MIT",
+  "homepage": "module/index.html"
+}
