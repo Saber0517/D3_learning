@@ -10,29 +10,40 @@ d3.csv("data.csv", type, function (data) {
         .append("svg")
         .attr("width", width)
         .attr("height", height);
-    
+
     var g = svg.append("g")
         .attr("transform", "translate(200,200)");
 
     var arc_generator = d3.svg.arc()
         .innerRadius(100)
         .outerRadius(200);
-/*        .startAngle(0)
-        .endAngle(120 * Math.PI / 180);*/
-    
+
     var angle_data = d3.layout.pie()
         .value(function (d) {
             return d.population;
         });
+
+    var color = d3.scale.category20();
+
     g.selectAll("path")
         .data(angle_data(data))
         .enter()
         .append("path")
-        .attr("d", arc_generator);
-     
-        
-    
-    
+        .attr("d", arc_generator)
+        .style("fill", function (d, i) {
+            return color(i);
+        });
+
+    g.selectAll("text")
+        .data(angle_data(data))
+        .enter()
+        .append("text")
+        .text(function (d) {return d.data.education;})
+        .attr("transform", function (d) {
+            console.log(arc_generator.centroid(d));
+            return "translate(" + arc_generator.centroid(d) + ")";})
+        .attr("text-anchor","middle");    
+
 });
 
 function type(d) {
