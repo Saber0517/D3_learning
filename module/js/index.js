@@ -1,3 +1,5 @@
+'use strict'
+
 //svg
 var width = 500;
 var height = 250;
@@ -20,14 +22,26 @@ var scale_x = d3.scale.linear()
 
 var scale_y  = d3.scale.linear()
     .domain([0,d3.max(data)])
-    .range([0,g_height]);
+    .range([g_height,0]);
 
 var line_generator = d3.svg.line()
-.x(function (d, i) {return scale_x(i);})
-.y(function (d) {return scale_y(d);})
-    .interpolate('cardinal')
+    .x(function (d, i) {
+        return scale_x(i);
+    })
+    .y(function (d) {
+        return scale_y(d);
+    })
+    .interpolate('cardinal');
 
 
-d3.select("g")
-.append("path")
-.attr("d",line_generator(data)) 
+g.append("path")
+.attr("d",line_generator (data)) //d -- path data
+
+var x_axis = d3.svg.axis().scale(scale_x);
+var y_axis = d3.svg.axis().scale(scale_y).orient("left");
+
+g.append("g")
+    .call(x_axis)
+    .attr("transform", "translate(0," + g_height + ")");
+g.append("g")
+    .call(y_axis);
