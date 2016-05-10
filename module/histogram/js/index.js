@@ -2,39 +2,60 @@
 d3.csv("data.csv", type, function (data) {
     console.log(data);
 
-    var bar_width = 50;
-    var bar_padding = 10;
-    var svg_width = (bar_width + bar_padding) * data.length;
-    var svg_height = 500;
+    var width = 1000,
+        height = 500,
+        margin = {left: 30, top: 30, right: 30, bottom: 30};
+
+    var svg_width = width + margin.left + margin.right;    
+    var svg_height = height + margin.top + margin.bottom;
+
+    var scale = d3.scale.linear()
+        .domain([0, d3.max(data, function (d) {
+            return d.population;
+        })])
+        .range([height, 0]);
+
+    var scale_x = d3.scale.ordinal()
+        .domain(data.map(function (d) {
+            return d.year;
+        }))
+        .rangeBands([0,width],0.1);
+
     var svg = d3.select("#container")
         .append("svg")
         .attr("width", svg_width)
-        .attr("height", svg_height)
+        .attr("height", svg_height);
 
-    var scale = d3.scale.linear()
-        .domain([0, d3.max(data,function (d) {
-            return d.population;
-        })])
-        .range([svg_height, 0])
+    var chart = svg.append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top+")");
 
-    var bar = svg.selectAll("g")//
+    var x_axis = d3.svg.axis().scale(scale_x);
+    var y_axis = d3.svg.axis().scale(scale).orient("left");
+    
+    chart.append("g")
+        .call(x_axis).attr("transform","translate(0,"+height+")");
+    chart.append("g")
+        .call(y_axis);
+    
+    
+    var bar = chart.selectAll(".bar")//不会选中g
         .data(data)
         .enter()
         .append("g")
-        .attr("transform", function (d, i) {
-            return "translate(" + i * (bar_width + bar_padding) + ",0)";
+        .attr("class","bar")
+        .attr("transform", function (d,i) {
+            console.log("scale_x("+d.year+") =" + scale_x(d.year));
+            return "translate(" + scale_x(d.year) + ",0)";
         });
 
     bar.append("rect")
         .attr({
             "y": function (d) {
-                // console.log("rect")
-                // console.log(d);
                 return scale(d.population);
             },
-            "width": bar_width,
+            "width": scale_x.rangeBand(),
             "height": function (d) {
-                return svg_height - scale(d.population);
+                return height - scale(d.population);
             },
         })
         .style("fill", "steelblue");
@@ -45,11 +66,9 @@ d3.csv("data.csv", type, function (data) {
         })
         .attr({
             "y": function (d) {
-                // console.log("text");
-                // console.log(d);
                 return scale(d.population);
             },
-            "x": bar_width / 2,
+            "x": scale_x.rangeBand() / 2,
             "dy": 15,
             "text-anchor": "middle"
         });
