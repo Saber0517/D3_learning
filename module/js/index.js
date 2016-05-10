@@ -44,4 +44,9 @@ g.append("g")
     .call(x_axis)
     .attr("transform", "translate(0," + g_height + ")");
 g.append("g")
-    .call(y_axis);
+    .call(y_axis)
+    .append("text")
+    .text("Price($)")
+    .attr("transform","rotate(-90)")
+    .attr("text-anchor","end")
+    .attr("dy","1em");
